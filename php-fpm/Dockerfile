@@ -39,4 +39,13 @@ RUN apt-get install -y \
 RUN apt install libzip-dev/stable -y \
     && docker-php-ext-install zip
 
+# 安装 opcache
+RUN docker-php-ext-enable opcache
+
+# 安装 bcmath
+RUN docker-php-ext-install bcmath
+
+COPY www.conf /usr/local/etc/php-fpm.d/www.conf
+COPY opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+
 WORKDIR /app
