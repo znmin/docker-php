@@ -1,6 +1,6 @@
-FROM php:7.3.33-cli
+FROM php:7.3.33-fpm
 
-MAINTAINER jimmy.xie jimmy.xie@znmin.com
+MAINTAINER jimmy.xie <jimmy.xie@znmin.com>
 
 WORKDIR /root
 
@@ -40,5 +40,3 @@ RUN apt install libzip-dev/stable -y \
     && docker-php-ext-install zip
 
 WORKDIR /app
-
-CMD ["php", "artisan", "serve"]
