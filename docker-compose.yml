@@ -1,0 +1,23 @@
+version: '3'
+services:
+  php:
+    image: jimindocker/bjxv2-php-fpm:latest
+    volumes:
+      - .:/app
+    networks:
+      - bjxv2
+  nginx:
+    image: jimindocker/bjxv2-nginx:latest
+    volumes:
+      - .:/app
+    ports:
+      - "80:80"
+    networks:
+      - bjxv2
+    depends_on:
+      - php
+
+networks:
+  bjxv2:
+
+
