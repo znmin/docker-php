@@ -1,4 +1,4 @@
-FROM php:7.3.33-fpm
+FROM php:7.4.28-fpm
 
 MAINTAINER jimmy.xie <jimmy.xie@znmin.com>
 
@@ -46,6 +46,13 @@ RUN docker-php-ext-enable opcache
 RUN docker-php-ext-install bcmath
 
 COPY www.conf /usr/local/etc/php-fpm.d/www.conf
-COPY opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+COPY opcache/* /usr/local/etc/php/conf.d/
+COPY docker-entrypoint.sh /docker-entrypoint.sh
 
 WORKDIR /app
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
+
+CMD ["php-fpm"]
+
+
