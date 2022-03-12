@@ -45,14 +45,18 @@ RUN docker-php-ext-enable opcache
 # 安装 bcmath
 RUN docker-php-ext-install bcmath
 
+# 安装
+RUN wget https://github.com/tideways/php-xhprof-extension/archive/refs/tags/v5.0.4.tar.gz \
+    && tar -zxvf v5.0.4.tar.gz && rm -rf v5.0.4.tar.gz && cd php-xhprof-extension-5.0.4 \
+    && phpize && ./configure && make && make install && docker-php-ext-enable tideways_xhprof
+
 COPY www.conf /usr/local/etc/php-fpm.d/www.conf
-COPY opcache/* /usr/local/etc/php/conf.d/
+COPY config/* /usr/local/etc/php/conf.d/
 COPY docker-entrypoint.sh /docker-entrypoint.sh
+COPY xhprof/inject.php /usr/local/etc/php-fpm.d/inject.php
 
 WORKDIR /app
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
 CMD ["php-fpm"]
-
-
