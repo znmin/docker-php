@@ -12,7 +12,12 @@ RUN apt update && apt install wget
 RUN docker-php-ext-install pdo_mysql
 
 # 安装 pdo_sqlsrv 扩展
-RUN apt-get install unixodbc-dev -y  \
+RUN apt-get install gnupg2 -y \
+    && curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
+    && curl https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list \
+    && apt-get update \
+    && ACCEPT_EULA=Y apt-get install -y msodbcsql17 \
+    && apt-get install unixodbc-dev -y  \
     && pecl install pdo_sqlsrv \
     && docker-php-ext-enable pdo_sqlsrv
 
@@ -54,6 +59,7 @@ COPY www.conf /usr/local/etc/php-fpm.d/www.conf
 COPY config/* /usr/local/etc/php/conf.d/
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 COPY xhprof/inject.php /usr/local/etc/php-fpm.d/inject.php
+COPY openssl.cnf /etc/ssl/openssl.cnf
 
 WORKDIR /app
 
