@@ -20,8 +20,9 @@ RUN apt-get update \
     && pecl install redis \
     && pecl install imagick \
     && pecl install pdo_sqlsrv \
+    && pecl install inotify \
     && pecl install https://pecl.php.net/get/swoole-4.8.12.tgz \
-    && docker-php-ext-enable redis imagick pdo_sqlsrv swoole \
+    && docker-php-ext-enable redis imagick pdo_sqlsrv inotify swoole \
     && docker-php-ext-install zip bcmath pdo_mysql \
     && ( \
         php -r "copy('https://install.phpcomposer.com/installer', 'composer-setup.php');" \
