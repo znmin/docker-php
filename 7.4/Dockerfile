@@ -36,6 +36,7 @@ RUN apt-get update \
         mkdir /opt/oracle \
         && unzip /opt/oracle/instantclient-sdk-linux.x64-21.9.0.0.0dbru.zip -d /opt/oracle/ \
         && unzip /opt/oracle/instantclient-basic-linux.x64-21.9.0.0.0dbru.zip -d /opt/oracle \
+        && rm -rf /opt/oracle/*.zip \
         && echo 'instantclient,/opt/oracle/instantclient_21_9/' | pecl install https://pecl.php.net/get/oci8-2.2.0.tgz \
         && cd /tmp/ext/pdo_oci  \
         && phpize \
