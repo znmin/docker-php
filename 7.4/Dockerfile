@@ -51,16 +51,6 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-ADD instantclient-basic-linux.x64-21.9.0.0.0dbru.zip /opt/oracle
-ADD instantclient-sdk-linux.x64-21.9.0.0.0dbru.zip /opt/oracle
-
-RUN unzip /opt/oracle/instantclient-basic-linux.x64-21.9.0.0.0dbru.zip -d /opt/oracle/ \
-    && unzip instantclient-sdk-linux.x64-21.9.0.0.0dbru.zip -d /opt/oracle/
-
-ENV LD_LIBRARY_PATH  /opt/oracle/instantclient_21_9:${LD_LIBRARY_PATH}
-
-RUN echo 'instantclient,/opt/oracle/instantclient_12_1/' | pecl install oci8
-
 RUN printf "; priority=20\nextension=pdo_sqlsrv.so" > /etc/php/7.4/cli/conf.d/20-pdo_sqlsrv.ini \
     && printf "; priority=20\nextension=xlswriter.so" > /etc/php/7.4/cli/conf.d/20-xlswriter.ini \
     && printf "; priority=20\nextension=oci8" > /etc/php/7.4/cli/conf.d/20-oci8.ini \
