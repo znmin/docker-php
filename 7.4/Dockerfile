@@ -4,11 +4,16 @@ MAINTAINER Jimmy Xie
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV TZ=PRC
-ENV ORACLE_HOME=/opt/oracle/instantclient_21_9
+ENV ORACLE_OPT=/opt/oracle
+ENV ORACLE_HOME=$ORACLE_OPT/instantclient_21_9
 ENV LD_LIBRARY_PATH=$ORACLE_HOME
 
-ADD instantclient-sdk-linux.x64-21.9.0.0.0dbru.zip /opt/oracle
-ADD instantclient-basic-linux.x64-21.9.0.0.0dbru.zip /opt/oracle
+RUN mkdir $ORACLE_OPT
+
+COPY ext /tmp/ext
+
+ADD instantclient-sdk-linux.x64-21.9.0.0.0dbru.zip $ORACLE_OPT
+ADD instantclient-basic-linux.x64-21.9.0.0.0dbru.zip $ORACLE_OPT
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
@@ -26,23 +31,23 @@ RUN apt-get update \
        php7.4-msgpack php7.4-igbinary php7.4-ldap \
        php7.4-redis php7.4-swoole \
     && ( \
+        unzip $ORACLE_OPT/instantclient-sdk-linux.x64-21.9.0.0.0dbru.zip -d $ORACLE_OPT \
+        && unzip $ORACLE_OPT/instantclient-basic-linux.x64-21.9.0.0.0dbru.zip -d $ORACLE_OPT \
+        && rm -rf $ORACLE_OPT/*.zip \
+        && echo 'instantclient,$ORACLE_HOME' | pecl install https://pecl.php.net/get/oci8-2.2.0.tgz \
+        && cd /tmp/ext/pdo_oci  \
+        && phpize \
+        && ./configure --with-pdo-oci=instantclient,$ORACLE_HOME,21.9 \
+        && make \
+        && make install \
+        && rm -rf /tmp/ext \
+    ) \
+    && ( \
         curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
         && curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list > /etc/apt/sources.list.d/mssql-release.list \
         && apt-get update \
         && ACCEPT_EULA=Y apt-get install -y msodbcsql18 \
         && apt-get install unixodbc-dev -y  \
-    ) \
-    && ( \
-        mkdir /opt/oracle \
-        && unzip /opt/oracle/instantclient-sdk-linux.x64-21.9.0.0.0dbru.zip -d /opt/oracle/ \
-        && unzip /opt/oracle/instantclient-basic-linux.x64-21.9.0.0.0dbru.zip -d /opt/oracle \
-        && rm -rf /opt/oracle/*.zip \
-        && echo 'instantclient,/opt/oracle/instantclient_21_9/' | pecl install https://pecl.php.net/get/oci8-2.2.0.tgz \
-        && cd /tmp/ext/pdo_oci  \
-        && phpize \
-        && ./configure --with-pdo-oci=instantclient,/opt/oracle/instantclient_21_9,21.9 \
-        && make \
-        && make install \
     ) \
     && pecl install https://pecl.php.net/get/pdo_sqlsrv-5.10.1.tgz \
     && pecl install https://pecl.php.net/get/xlswriter-1.5.4.tgz \
@@ -55,7 +60,6 @@ RUN printf "; priority=20\nextension=pdo_sqlsrv.so" > /etc/php/7.4/cli/conf.d/20
     && printf "; priority=20\nextension=xlswriter.so" > /etc/php/7.4/cli/conf.d/20-xlswriter.ini \
     && printf "; priority=20\nextension=oci8" > /etc/php/7.4/cli/conf.d/20-oci8.ini \
     && printf "; priority=20\nextension=pdo_oci" > /etc/php/7.4/cli/conf.d/20-pdo_oci.ini
-
 
 COPY php.ini /etc/php/7.4/cli/conf.d/99-sail.ini
 COPY openssl.cnf /etc/ssl/openssl.cnf
