@@ -45,7 +45,7 @@ RUN apt-get update \
     ) \
     && pecl install https://pecl.php.net/get/pdo_sqlsrv-5.10.1.tgz \
     && pecl install https://pecl.php.net/get/xlswriter-1.5.4.tgz \
-    && curl -sLS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ --filename=composer
+    && curl -sLS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ --filename=composer \
     && apt-get -y autoremove \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
